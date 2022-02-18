@@ -57,13 +57,21 @@ public class TutorialController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-
+	
+	@GetMapping("/tutorials/get-by-price/{price}")
+	public ResponseEntity<List<Tutorial>> getTutorialByPrice(@PathVariable("price") Long price) {
+		List<Tutorial> tutorialsByPriceData = tutorialRepository.findByPrice(price);
+		if (!tutorialsByPriceData.isEmpty()) {
+			return new ResponseEntity<>(tutorialsByPriceData, HttpStatus.OK);
+		} 
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
 
 	@PostMapping("/tutorials")
 	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
 		try {
 			Tutorial _tutorial = tutorialRepository
-					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(),  false));
+					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false, tutorial.getPrice()));
 			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
