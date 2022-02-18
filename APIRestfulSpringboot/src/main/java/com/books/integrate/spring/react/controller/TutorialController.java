@@ -96,6 +96,19 @@ public class TutorialController {
 		}
 	}
 
+	@DeleteMapping("/tutorials/delete-title/{title}")
+	public ResponseEntity<String> deleteTutorialByTitle(@PathVariable("title") String title){
+		try{
+			List<Tutorial> tutorialDataByTitle = tutorialRepository.findByTitle(title);
+			for(Tutorial tutorial : tutorialDataByTitle){
+				tutorialRepository.deleteById(tutorial.getId());
+			}
+			return new ResponseEntity<>("Tutorials with title '"+title+"' deleted succesfully!", HttpStatus.NO_CONTENT);
+		}catch(Exception e){
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
 	@DeleteMapping("/tutorials")
 	public ResponseEntity<HttpStatus> deleteAllTutorials() {
 		try {
