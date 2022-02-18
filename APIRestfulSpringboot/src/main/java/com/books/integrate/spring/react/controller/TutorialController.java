@@ -85,6 +85,21 @@ public class TutorialController {
 		}
 	}
 
+	@PutMapping("/tutorials/update-by-title/{title}")
+	public ResponseEntity<Tutorial> updateTutorialByTitle(@PathVariable("title") String title, @RequestBody Tutorial tutorial) {
+		List<Tutorial> tutorialsByTitleData = tutorialRepository.findByTitle(title);
+		if (!tutorialsByTitleData.isEmpty()) {
+			for(Tutorial tutorials : tutorialsByTitleData){
+				tutorials.setTitle(tutorial.getTitle());
+				tutorials.setDescription(tutorial.getDescription());
+				tutorials.setPublished(tutorial.isPublished());
+				tutorialRepository.save(tutorials);
+			}
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
 //HttpStatus
 	@DeleteMapping("/tutorials/{id}")
 	public ResponseEntity<String> deleteTutorial(@PathVariable("id") long id) {
@@ -96,7 +111,7 @@ public class TutorialController {
 		}
 	}
 
-	@DeleteMapping("/tutorials/delete-title/{title}")
+	@DeleteMapping("/tutorials/delete-by-title/{title}")
 	public ResponseEntity<String> deleteTutorialByTitle(@PathVariable("title") String title){
 		try{
 			List<Tutorial> tutorialDataByTitle = tutorialRepository.findByTitle(title);
