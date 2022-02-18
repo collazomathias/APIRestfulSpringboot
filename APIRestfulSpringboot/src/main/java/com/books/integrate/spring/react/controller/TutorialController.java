@@ -101,6 +101,7 @@ public class TutorialController {
 				tutorials.setTitle(tutorial.getTitle());
 				tutorials.setDescription(tutorial.getDescription());
 				tutorials.setPublished(tutorial.isPublished());
+				tutorials.setPrice(tutorial.getPrice());
 				tutorialRepository.save(tutorials);
 			}
 			return new ResponseEntity<>(HttpStatus.OK);
