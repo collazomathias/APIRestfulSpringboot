@@ -61,10 +61,14 @@ public class TutorialController {
 	@GetMapping("/tutorials/get-by-price/{price}")
 	public ResponseEntity<List<Tutorial>> getTutorialByPrice(@PathVariable("price") Long price) {
 		List<Tutorial> tutorialsByPriceData = tutorialRepository.findByPrice(price);
-		if (!tutorialsByPriceData.isEmpty()) {
-			return new ResponseEntity<>(tutorialsByPriceData, HttpStatus.OK);
-		} 
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		try{
+			if (!tutorialsByPriceData.isEmpty()) {
+				return new ResponseEntity<>(tutorialsByPriceData, HttpStatus.OK);
+			} 
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}catch(Exception e){
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PostMapping("/tutorials")
@@ -96,17 +100,21 @@ public class TutorialController {
 	@PutMapping("/tutorials/update-by-title/{title}")
 	public ResponseEntity<Tutorial> updateTutorialByTitle(@PathVariable("title") String title, @RequestBody Tutorial tutorial) {
 		List<Tutorial> tutorialsByTitleData = tutorialRepository.findByTitle(title);
-		if (!tutorialsByTitleData.isEmpty()) {
-			for(Tutorial tutorials : tutorialsByTitleData){
-				tutorials.setTitle(tutorial.getTitle());
-				tutorials.setDescription(tutorial.getDescription());
-				tutorials.setPublished(tutorial.isPublished());
-				tutorials.setPrice(tutorial.getPrice());
-				tutorialRepository.save(tutorials);
+		try {
+			if (!tutorialsByTitleData.isEmpty()) {
+				for(Tutorial tutorials : tutorialsByTitleData){
+					if(tutorial.getTitle() != null) tutorials.setTitle(tutorial.getTitle());
+					if(tutorial.getDescription() != null) tutorials.setDescription(tutorial.getDescription());
+					if(tutorial.isPublished() == true) tutorials.setPublished(tutorial.isPublished());
+					if(tutorial.getPrice() != 0) tutorials.setPrice(tutorial.getPrice());
+					tutorialRepository.save(tutorials);
+				}
+				return new ResponseEntity<>(HttpStatus.OK);
 			}
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch(Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 //HttpStatus
